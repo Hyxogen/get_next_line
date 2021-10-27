@@ -6,7 +6,7 @@
 /*   By: dmeijer <dmeijer@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/10/27 09:32:30 by dmeijer       #+#    #+#                 */
-/*   Updated: 2021/10/27 14:48:52 by dmeijer       ########   odam.nl         */
+/*   Updated: 2021/10/27 17:31:49 by dmeijer       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@ static char
    line_end++;
    printf("Going to copy %zu bytes\n", len);
    ft_memcpy(remaining, line_end + 1, len);
+   ft_memset(remaining + len, 0, BUFFER_SIZE - len); //This is probably not right
+   printf("Remaining:\"%s\"\n", remaining);
    return (ret);
 }
 
@@ -88,7 +90,7 @@ char
         }
         bytes_read = read(fd, &buffer[0], BUFFER_SIZE);
         printf("Read %ld bytes\n", bytes_read);
-        if (bytes_read <= -1)
+        if (bytes_read <= 0)
         {
             free(ret);
             return (NULL);

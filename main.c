@@ -1,3 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        ::::::::            */
+/*   main.c                                             :+:    :+:            */
+/*                                                     +:+                    */
+/*   By: dmeijer <dmeijer@student.codam.nl>           +#+                     */
+/*                                                   +#+                      */
+/*   Created: 2021/10/27 17:25:58 by dmeijer       #+#    #+#                 */
+/*   Updated: 2021/10/27 17:32:01 by dmeijer       ########   odam.nl         */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
 
@@ -6,7 +19,17 @@ char *get_next_line(int fd);
 int
 	main(void)
 {
-	int fd = open("test", O_RDONLY);
-	printf("%s\n", get_next_line(fd));
+	char	*line;
+	int		fd;
+
+	fd = open("test", O_RDONLY);
+	while (1)
+	{
+	    line = get_next_line(fd);
+        printf("RESULT:\"%s\"", line);
+        if (!line)
+            break ;
+        free(line);
+    }
 	return (0);
 }

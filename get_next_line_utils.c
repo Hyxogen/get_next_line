@@ -6,11 +6,12 @@
 /*   By: dmeijer <dmeijer@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/10/27 09:32:39 by dmeijer       #+#    #+#                 */
-/*   Updated: 2021/10/27 14:29:49 by dmeijer       ########   odam.nl         */
+/*   Updated: 2021/10/27 17:21:15 by dmeijer       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include <stdint.h>
 #include <wchar.h>
 #include <stdlib.h>
 
@@ -95,6 +96,24 @@ void
 	free(src);
 	return (ret);
 }
+
+/*
+ * TODO check if this memset works
+ */
+void
+	*ft_memset(void *src, int c, size_t len)
+{
+	unsigned char	*src_cpy;
+
+    src_cpy = src;
+    while (len)
+    {
+        src_cpy[len - 1] = (unsigned char) c;
+        len--;
+    }
+    return (src);
+}
+//TODO Replace strjoin with memset
 /*
 char
 	*ft_strjoin(const char *str1, const char *str2)

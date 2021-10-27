@@ -6,7 +6,7 @@
 /*   By: dmeijer <dmeijer@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/10/27 09:32:47 by dmeijer       #+#    #+#                 */
-/*   Updated: 2021/10/27 14:31:04 by dmeijer       ########   odam.nl         */
+/*   Updated: 2021/10/27 17:21:29 by dmeijer       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,4 +23,5 @@ void	*ft_memchr(const void *arr, unsigned char c, size_t n);
 void	*ft_memcpy(void *dst, const void *src, size_t len);
 void	*ft_realloc(void *src, size_t old_len, size_t new_len);
 char	*ft_strjoin(const char *str1, const char *str2);
+void	*ft_memset(void *src, int c, size_t len);
 #endif
