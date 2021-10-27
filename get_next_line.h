@@ -6,7 +6,7 @@
 /*   By: dmeijer <dmeijer@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/10/27 09:32:47 by dmeijer       #+#    #+#                 */
-/*   Updated: 2021/10/27 09:32:48 by dmeijer       ########   odam.nl         */
+/*   Updated: 2021/10/27 14:31:04 by dmeijer       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,13 @@
 # define GET_NEXT_LINE_H
 # include <wchar.h>
 
-# define NULL 0
-
 # ifndef BUFFER_SIZE
-#  define BUFFER_SIZE 128
+#  define BUFFER_SIZE 1
 # endif
 
 char	*ft_strndup(const char *str, size_t len);
-char	*ft_strchr(const char *str, char c);
+void	*ft_memchr(const void *arr, unsigned char c, size_t n);
 void	*ft_memcpy(void *dst, const void *src, size_t len);
 void	*ft_realloc(void *src, size_t old_len, size_t new_len);
-char	*ft_strjoin(const char *str1, const char *str2)
+char	*ft_strjoin(const char *str1, const char *str2);
 #endif
