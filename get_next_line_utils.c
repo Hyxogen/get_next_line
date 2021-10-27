@@ -6,7 +6,7 @@
 /*   By: dmeijer <dmeijer@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/10/27 09:32:39 by dmeijer       #+#    #+#                 */
-/*   Updated: 2021/10/27 09:32:50 by dmeijer       ########   odam.nl         */
+/*   Updated: 2021/10/27 14:29:49 by dmeijer       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,20 @@
 #include <wchar.h>
 #include <stdlib.h>
 
-char
-	*ft_strchr(const char *str, char c)
+void
+	*ft_memchr(const void *arr, unsigned char c, size_t n)
 {
-	while (1)
+	const unsigned char	*arr_cpy;
+
+	arr_cpy = arr;
+	while (n)
 	{
-		if (*str == c)
-			return ((char *) str);
-		if (!*str)
+		if (*arr_cpy == c)
+			return ((void *) arr_cpy);
+		if (!*arr_cpy)
 			break ;
+		n--;
+		arr_cpy++;
 	}
 	return (NULL);
 }
@@ -90,7 +95,7 @@ void
 	free(src);
 	return (ret);
 }
-
+/*
 char
 	*ft_strjoin(const char *str1, const char *str2)
 {
@@ -107,3 +112,4 @@ char
 	ft_memcpy(ret + str1_len + 1, str2, str2_len + 1);
 	return (ret);
 }
+*/
