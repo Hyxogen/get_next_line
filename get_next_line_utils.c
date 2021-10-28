@@ -6,7 +6,7 @@
 /*   By: dmeijer <dmeijer@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/10/27 09:32:39 by dmeijer       #+#    #+#                 */
-/*   Updated: 2021/10/27 17:21:15 by dmeijer       ########   odam.nl         */
+/*   Updated: 2021/10/28 13:16:00 by dmeijer       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,6 @@ char
 void
 	*ft_realloc(void *src, size_t old_len, size_t new_len)
 {
-	unsigned char *src_cpy;
 	unsigned char	*ret;
 
 	ret = malloc(new_len);

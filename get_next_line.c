@@ -6,7 +6,7 @@
 /*   By: dmeijer <dmeijer@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/10/27 09:32:30 by dmeijer       #+#    #+#                 */
-/*   Updated: 2021/10/28 09:37:36 by dmeijer       ########   odam.nl         */
+/*   Updated: 2021/10/28 13:15:59 by dmeijer       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,18 +14,6 @@
 #include <stdlib.h>
 #include "get_next_line.h"
 #include <stdio.h>
-
-
-static char
-    *get_line_end(char *str, size_t len)
-{
-    char    *ret;
-
-    ret = ft_memchr(str, '\n', len);
-    if (!ret)
-        ret = ft_memchr(str, '\0', len);
-    return (ret);
-}
 
 /*
  * Probably a good idea to zero the remaining afterwards
