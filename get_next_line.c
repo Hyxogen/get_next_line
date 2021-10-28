@@ -6,7 +6,7 @@
 /*   By: dmeijer <dmeijer@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/10/27 09:32:30 by dmeijer       #+#    #+#                 */
-/*   Updated: 2021/10/27 17:31:49 by dmeijer       ########   odam.nl         */
+/*   Updated: 2021/10/28 09:34:18 by dmeijer       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,11 @@ static char
    ret = ft_strndup(str, line_len);
    if (!ret)
        return (NULL);
+   if (!line_end)
+   {
+       ft_memset(remaining, 0, BUFFER_SIZE);
+       return (ret);
+   }
    len -= line_len;
    line_end++;
    printf("Going to copy %zu bytes\n", len);
@@ -74,7 +79,7 @@ char
         return (NULL);
     ft_memcpy(ret, &buffer[0], BUFFER_SIZE);
     bytes_read = BUFFER_SIZE;
-    bytes_read_total = 0;
+    bytes_read_total = (char *) ft_memchr(&buffer[0], '\0', BUFFER_SIZE) - &buffer[0];
     printf("Before while loop\n");
     while (1)
     {
@@ -91,7 +96,7 @@ char
         }
         bytes_read = read(fd, &buffer[0], BUFFER_SIZE);
         printf("Read %ld bytes\n", bytes_read);
-        if (bytes_read <= 0)
+        if (bytes_read < 0 || (bytes_read == 0 && !buffer[0]))
         {
             free(ret);
             return (NULL);
