@@ -6,7 +6,7 @@
 /*   By: dmeijer <dmeijer@student.codam.nl>           +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2021/10/27 09:32:30 by dmeijer       #+#    #+#                 */
-/*   Updated: 2021/10/28 09:34:18 by dmeijer       ########   odam.nl         */
+/*   Updated: 2021/10/28 09:37:36 by dmeijer       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,7 @@ static char
    char     *ret;
    size_t   line_len;
 
-   printf("Line start:%lx line end:%lx line len:%zu\n", (unsigned long) str, (unsigned long) line_end, len);
    line_len = line_end - str + 1;
-   printf("Line len:%zu\n", line_len);
    ret = ft_strndup(str, line_len);
    if (!ret)
        return (NULL);
@@ -49,11 +47,9 @@ static char
    }
    len -= line_len;
    line_end++;
-   printf("Going to copy %zu bytes\n", len);
    //Het gaat 'fout' bij memcpy
    ft_memcpy(remaining, line_end, len);
    ft_memset(remaining + len, 0, BUFFER_SIZE - len); //This is probably not right
-   printf("Remaining:\"%s\"\n", remaining);
    return (ret);
 }
 
@@ -80,39 +76,30 @@ char
     ft_memcpy(ret, &buffer[0], BUFFER_SIZE);
     bytes_read = BUFFER_SIZE;
     bytes_read_total = (char *) ft_memchr(&buffer[0], '\0', BUFFER_SIZE) - &buffer[0];
-    printf("Before while loop\n");
     while (1)
     {
-        printf("Top while loop, ret:\"%s\"\n", ret);
         line_end = ft_memchr(ret, '\n', bytes_read_total);
-        printf("Line end:%lx\n", (unsigned long) line_end);
         if (line_end || bytes_read < BUFFER_SIZE)
         {
-            printf("Found a line\n");
             temp = process_line(ret, &buffer[0], line_end, bytes_read_total);
             if (!temp)
                 free(ret);
             return (temp);
         }
         bytes_read = read(fd, &buffer[0], BUFFER_SIZE);
-        printf("Read %ld bytes\n", bytes_read);
         if (bytes_read < 0 || (bytes_read == 0 && !buffer[0]))
         {
             free(ret);
             return (NULL);
         }
-        printf("Start realloc\n");
         ret = ft_realloc(ret, bytes_read_total, bytes_read_total + bytes_read);
-        printf("Realloced\n");
         if (!ret)
         {
             free(ret);
             return (NULL);
         }
-        printf("Start memcpy, before:\"%s\"\n", ret);
         ft_memcpy(ret + bytes_read_total, &buffer[0], bytes_read);
         bytes_read_total += bytes_read;
-        printf("Total bytes read: %ld after:\"%s\"\n", bytes_read_total, ret);
         if (i == 12)
             break;
         i++;
