@@ -45,7 +45,8 @@ static char
    len -= line_len;
    line_end++;
    printf("Going to copy %zu bytes\n", len);
-   ft_memcpy(remaining, line_end + 1, len);
+   //Het gaat 'fout' bij memcpy
+   ft_memcpy(remaining, line_end, len);
    ft_memset(remaining + len, 0, BUFFER_SIZE - len); //This is probably not right
    printf("Remaining:\"%s\"\n", remaining);
    return (ret);
