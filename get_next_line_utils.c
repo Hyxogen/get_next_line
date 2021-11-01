@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <wchar.h>
 #include <stdlib.h>
+#include <string.h>
 
 void
 	*ft_memchr(const void *arr, unsigned char c, size_t n)
@@ -40,8 +41,8 @@ void
 void
 	*ft_memcpy(void *dst, const void *src, size_t len)
 {
-	unsigned char				*dst_cpy;
-	const	unsigned char	*src_cpy;
+	unsigned char			*dst_cpy;
+	const unsigned char		*src_cpy;
 
 	if (dst == src)
 		return (dst);
@@ -56,16 +57,20 @@ void
 }
 
 char
-	*ft_strndup(const char *str, size_t len)
-{
-	char				*ret;
-	const char	*temp;
-	size_t			str_len;
+	*ft_strndup(const char *str, size_t len) {
+	char *ret;
+	const char *temp;
+	size_t str_len;
 
 	temp = str;
-	while (*temp)
+	str_len = len;
+	while (str_len && *temp)
+	{
 		temp++;
+		str_len--;
+	}
 	str_len = temp - str;
+//	str_len = strnlen(str, len);
 	if (len <= str_len)
 		len = len + 1;
 	else
@@ -73,7 +78,7 @@ char
 	ret = malloc(len);
 	if (!ret)
 		return (NULL);
-	ft_memcpy(ret, str, len);
+	ft_memcpy(ret, str, len - 1);
 	ret[len - 1] = '\0';
 	return (ret);
 }
@@ -112,22 +117,3 @@ void
     }
     return (src);
 }
-//TODO Replace strjoin with memset
-/*
-char
-	*ft_strjoin(const char *str1, const char *str2)
-{
-	size_t	str1_len;
-	size_t	str2_len;
-	char*		ret;
-
-	str1_len = ft_strchr(str1, '\0') - str1;
-	str1_len = ft_strchr(str2, '\0') - str1;
-	ret = malloc (str1_len + str2_len + 1);
-	if (!ret)
-		return (0);
-	ft_memcpy(ret, str1, str1_len);
-	ft_memcpy(ret + str1_len + 1, str2, str2_len + 1);
-	return (ret);
-}
-*/
