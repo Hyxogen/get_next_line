@@ -27,4 +27,7 @@ void	*ft_memset(void *src, int c, size_t len);
 
 char	*get_next_line(int fd);
 
+# define TRUE 1
+# define FALSE 0
+
 #endif
