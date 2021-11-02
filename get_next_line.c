@@ -44,10 +44,12 @@ static char *ProcessLine(char *line, char *line_end, t_line_buffer *line_buffer,
 	ret = ft_strndup(line, line_len);
 	if (!ret)
 		return (CleanUp(line, line_buffer));
+	line_len = (char*) ft_memchr(line_buffer->m_Start, '\n', line_buffer->m_BufferSize) - line_buffer->m_Start + 1;
 	line_buffer->m_Start += line_len;
-	if (line_buffer->m_BufferSize > line_len)
+	if (line_buffer->m_BufferSize > line_len) {
 		line_buffer->m_BufferSize -= (line_len);
-	else
+//		printf("buffer \"%.*s\"\n", (int) line_buffer->m_BufferSize, line_buffer->m_Start);
+	} else
 		line_buffer->m_BufferSize = 0;
 	free(line);
 	return (ret);
@@ -86,12 +88,12 @@ char *get_next_line(int fd) {
 		return (NULL);
 	}
 	bytes_read_total = line_buffer->m_BufferSize;
-	line_buffer->m_Start = &(line_buffer->m_Buffer[0]);
 	bytes_read = 1;
 	while (1) {
 		line_end = ft_memchr(ret, '\n', bytes_read_total);
 		if (line_end || !bytes_read)
 			return (ProcessLine(ret, line_end, line_buffer, bytes_read_total));
+		line_buffer->m_Start = &(line_buffer->m_Buffer[0]);
 		bytes_read = read(fd, line_buffer->m_Start, BUFFER_SIZE);
 		if (bytes_read < 0)
 			return (CleanUp(ret, line_buffer));
