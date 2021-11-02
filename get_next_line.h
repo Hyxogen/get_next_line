@@ -27,6 +27,13 @@ void	*ft_memset(void *src, int c, size_t len);
 
 char	*get_next_line(int fd);
 
+typedef struct s_line_buffer {
+	char m_Buffer[BUFFER_SIZE];
+	char *m_Start;
+	char *m_End;
+	size_t m_BufferSize;
+}	t_line_buffer;
+
 # define TRUE 1
 # define FALSE 0
 
