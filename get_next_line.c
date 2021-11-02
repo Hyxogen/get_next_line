@@ -16,6 +16,15 @@
 #include <stdio.h>
 #include <limits.h>
 
+//Always returns a NULL pointer
+static char *CleanUp(char *ret, t_line_buffer *line_buffer) {
+	free(ret);
+	line_buffer->m_BufferSize = 0;
+	line_buffer->m_Start = NULL;
+	ft_memset(&line_buffer->m_Buffer[0], 0, BUFFER_SIZE); //TODO check if needed
+	return (NULL);
+}
+
 static int IsValidFD(int fd) {
 	if ((fd >= 0) && (fd <= OPEN_MAX))
 		return (TRUE);
@@ -26,30 +35,21 @@ static char *ProcessLine(char *line, char *line_end, t_line_buffer *line_buffer,
 	char *ret;
 	size_t line_len;
 
-	//printf("\nsize:%zu line:\"%.*s\"\nbuffer:\"%.*s\"\n", size, (int) size, line, BUFFER_SIZE, &line_buffer->m_Buffer[0]);
-	if (!size) {
-		free(line);
-		line_buffer->m_Start = NULL;
-		ft_memset(&line_buffer->m_Buffer[0], 0, BUFFER_SIZE);
-		return (NULL);
-	}
+	if (!size)
+		return (CleanUp(line, line_buffer));
 	if (line_end)
 		line_len = line_end - line + 1;
 	else
 		line_len = size;
 	ret = ft_strndup(line, line_len);
-	if (!ret) {
-		free(line);
-		return (NULL);
-	}
-	printf("BYTES_READ_TOTAL:%zu, buffer_size:%zu\n", size, line_buffer->m_BufferSize);
+	if (!ret)
+		return (CleanUp(line, line_buffer));
 	line_buffer->m_Start += line_len;
 	if (line_buffer->m_BufferSize > line_len)
 		line_buffer->m_BufferSize -= (line_len);
 	else
 		line_buffer->m_BufferSize = 0;
 	free(line);
-	printf("ret:\"%s\"\n", ret);
 	return (ret);
 }
 
@@ -64,8 +64,6 @@ static t_line_buffer *GetLineBuffer(int fd) {
 
 	ret = &line_buffers[fd];
 	ret->m_End = &(ret->m_Buffer[BUFFER_SIZE - 1]);
-//	if (!ret->m_Start)
-//		ret->m_Start = &(ret->m_Buffer[0]); //TODO check if braces () are needed
 	return (&line_buffers[fd]);
 }
 
@@ -93,20 +91,14 @@ char *get_next_line(int fd) {
 	while (1) {
 		line_end = ft_memchr(ret, '\n', bytes_read_total);
 		if (line_end || !bytes_read)
-			return (ProcessLine(ret, line_end, line_buffer, bytes_read_total)); //TODO update ProcessLine
+			return (ProcessLine(ret, line_end, line_buffer, bytes_read_total));
 		bytes_read = read(fd, line_buffer->m_Start, BUFFER_SIZE);
-//		printf("Read %zd bytes\n", bytes_read);
-		if (bytes_read < 0) {
-			free(ret);
-			return (NULL);
-		}
+		if (bytes_read < 0)
+			return (CleanUp(ret, line_buffer));
 		line_buffer->m_BufferSize = bytes_read;
-		printf("bytes_read_total:%zu, bytes_read:%zd\n", bytes_read_total, bytes_read);
 		realloc_temp = ft_realloc(ret, bytes_read_total, bytes_read_total + bytes_read);
-		if (!realloc_temp) {
-			free(ret);
-			return (NULL);
-		}
+		if (!realloc_temp)
+			return (CleanUp(ret, line_buffer));
 		ret = realloc_temp;
 		ft_memcpy(ret + bytes_read_total, line_buffer->m_Start, bytes_read);
 		bytes_read_total += bytes_read;
