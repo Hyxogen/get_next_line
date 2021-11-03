@@ -36,21 +36,24 @@ static t_line_buffer *GetLineBuffer(int fd) {
 
 	ret = &line_buffers[fd];
 	ret->m_End = &(ret->m_Buffer[BUFFER_SIZE - 1]);
+	if (!ret->m_Start)
+		ret->m_Start = &ret->m_Buffer[0];
 	return (&line_buffers[fd]);
 }
-
+//Alloc size van size 0 zorgt voor problemen
 static char *ProcessLine(char *tmp, size_t tmp_size, t_line_buffer *line_buffer, char *line_end) {
 	char *ret;
 	size_t copy_len;
 
 	copy_len = line_end - line_buffer->m_Start + 1;
-	ret = ft_realloc(tmp, tmp_size, tmp_size + copy_len);
+	ret = ft_realloc(tmp, tmp_size, tmp_size + copy_len + 1);
 	if (!ret) {
 		free(tmp);
 		return (NULL);
 	}
 	ft_memcpy(ret + tmp_size, line_buffer->m_Start, copy_len);
-	line_buffer->m_Start = line_end;
+	ret[tmp_size + copy_len] = 0;
+	line_buffer->m_Start = line_end + 1;
 	line_buffer->m_BufferSize -= copy_len;
 	return (ret);
 }
