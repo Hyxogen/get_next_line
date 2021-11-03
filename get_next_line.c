@@ -17,15 +17,13 @@
 #include <limits.h>
 
 //Always returns a NULL pointer
-static char *CleanUp(char *ret, t_line_buffer *line_buffer) {
-	free(ret);
-	line_buffer->m_BufferSize = 0;
-	line_buffer->m_Start = NULL;
-	ft_memset(&line_buffer->m_Buffer[0], 0, BUFFER_SIZE); //TODO check if needed
-	return (NULL);
-}
-
-
+//static char *CleanUp(char *ret, t_line_buffer *line_buffer) {
+//	free(ret);
+//	line_buffer->m_BufferSize = 0;
+//	line_buffer->m_Start = NULL;
+//	ft_memset(&line_buffer->m_Buffer[0], 0, BUFFER_SIZE); //TODO check if needed
+//	return (NULL);
+//}
 
 /**
  *
@@ -41,8 +39,20 @@ static t_line_buffer *GetLineBuffer(int fd) {
 	return (&line_buffers[fd]);
 }
 
-static void ProcessLine(char *tmp, size_t tmp_size, t_line_buffer *line_buffer, char *line_end) {
+static char *ProcessLine(char *tmp, size_t tmp_size, t_line_buffer *line_buffer, char *line_end) {
+	char *ret;
+	size_t copy_len;
 
+	copy_len = line_end - line_buffer->m_Start + 1;
+	ret = ft_realloc(tmp, tmp_size, tmp_size + copy_len);
+	if (!ret) {
+		free(tmp);
+		return (NULL);
+	}
+	ft_memcpy(ret + tmp_size, line_buffer->m_Start, copy_len);
+	line_buffer->m_Start = line_end;
+	line_buffer->m_BufferSize -= copy_len;
+	return (ret);
 }
 
 char *get_next_line(int fd) {
@@ -59,10 +69,10 @@ char *get_next_line(int fd) {
 	tmp_len = 0;
 	tmp = NULL;
 	while (1) {
-		line_end = ft_memchr(lineBuffer->m_Start, lineBuffer->m_BufferSize);
+		line_end = ft_memchr(lineBuffer->m_Start, '\n', lineBuffer->m_BufferSize);
 		if (line_end || !bytes_read)
-			return (NULL);
-		line_end = ft_realloc(tmp, bytes_read_total, bytes_read_total + lineBuffer->m_BufferSize);
+			return (ProcessLine(tmp, tmp_len, lineBuffer, line_end));
+		line_end = ft_realloc(tmp, tmp_len, tmp_len + lineBuffer->m_BufferSize);
 		if (!line_end) {
 			free(tmp);
 			return (NULL);
