@@ -25,35 +25,7 @@ static char *CleanUp(char *ret, t_line_buffer *line_buffer) {
 	return (NULL);
 }
 
-static int IsValidFD(int fd) {
-	if ((fd >= 0) && (fd <= OPEN_MAX))
-		return (TRUE);
-	return (FALSE);
-}
 
-static char *ProcessLine(char *line, char *line_end, t_line_buffer *line_buffer, size_t size) {
-	char *ret;
-	size_t line_len;
-
-	if (!size)
-		return (CleanUp(line, line_buffer));
-	if (line_end)
-		line_len = line_end - line + 1;
-	else
-		line_len = size;
-	ret = ft_strndup(line, line_len);
-	if (!ret)
-		return (CleanUp(line, line_buffer));
-	line_len = (char*) ft_memchr(line_buffer->m_Start, '\n', line_buffer->m_BufferSize) - line_buffer->m_Start + 1;
-	line_buffer->m_Start += line_len;
-	if (line_buffer->m_BufferSize > line_len) {
-		line_buffer->m_BufferSize -= (line_len);
-//		printf("buffer \"%.*s\"\n", (int) line_buffer->m_BufferSize, line_buffer->m_Start);
-	} else
-		line_buffer->m_BufferSize = 0;
-	free(line);
-	return (ret);
-}
 
 /**
  *
@@ -69,40 +41,101 @@ static t_line_buffer *GetLineBuffer(int fd) {
 	return (&line_buffers[fd]);
 }
 
-char *get_next_line(int fd) {
-	t_line_buffer *line_buffer;
-	char *ret;
-	char *line_end;
-	char *realloc_temp;
-	size_t bytes_read_total;
-	ssize_t bytes_read;
+static void ProcessLine(char *tmp, size_t tmp_size, t_line_buffer *line_buffer, char *line_end) {
 
-	if (!IsValidFD(fd))
+}
+
+char *get_next_line(int fd) {
+	t_line_buffer *lineBuffer;
+	char *tmp;
+	char *line_end;
+	ssize_t bytes_read;
+	size_t tmp_len;
+
+	if (!((fd >= 0) && (fd <= OPEN_MAX)))
 		return (NULL);
-	line_buffer = GetLineBuffer(fd);
-	if (line_buffer->m_BufferSize)
-		ret = ft_strndup(line_buffer->m_Start, line_buffer->m_BufferSize); //This bottlenecks for big BUFFERSIZE with many many small lines
-	else
-		ret = malloc(BUFFER_SIZE);
-	if (!ret) {
-		return (NULL);
-	}
-	bytes_read_total = line_buffer->m_BufferSize;
+	lineBuffer = GetLineBuffer(fd);
 	bytes_read = 1;
+	tmp_len = 0;
+	tmp = NULL;
 	while (1) {
-		line_end = ft_memchr(ret, '\n', bytes_read_total);
+		line_end = ft_memchr(lineBuffer->m_Start, lineBuffer->m_BufferSize);
 		if (line_end || !bytes_read)
-			return (ProcessLine(ret, line_end, line_buffer, bytes_read_total));
-		line_buffer->m_Start = &(line_buffer->m_Buffer[0]);
-		bytes_read = read(fd, line_buffer->m_Start, BUFFER_SIZE);
-		if (bytes_read < 0)
-			return (CleanUp(ret, line_buffer));
-		line_buffer->m_BufferSize = bytes_read;
-		realloc_temp = ft_realloc(ret, bytes_read_total, bytes_read_total + bytes_read);
-		if (!realloc_temp)
-			return (CleanUp(ret, line_buffer));
-		ret = realloc_temp;
-		ft_memcpy(ret + bytes_read_total, line_buffer->m_Start, bytes_read);
-		bytes_read_total += bytes_read;
+			return (NULL);
+		line_end = ft_realloc(tmp, bytes_read_total, bytes_read_total + lineBuffer->m_BufferSize);
+		if (!line_end) {
+			free(tmp);
+			return (NULL);
+		}
+		tmp = line_end;
+		tmp_len += lineBuffer->m_BufferSize;
+		lineBuffer->m_BufferSize = BUFFER_SIZE;
+		lineBuffer->m_Start = &lineBuffer->m_Buffer[0];
+		bytes_read = read(fd, lineBuffer->m_Start, BUFFER_SIZE);
+		if (bytes_read < 0) {
+			free(tmp);
+			return (NULL);
+		}
 	}
 }
+
+//char *get_next_line(int fd) {
+//	t_line_buffer *line_buffer;
+//	char *ret;
+//	char *line_end;
+//	char *realloc_temp;
+//	size_t bytes_read_total;
+//	ssize_t bytes_read;
+//
+//	if (!IsValidFD(fd))
+//		return (NULL);
+//	line_buffer = GetLineBuffer(fd);
+//	if (line_buffer->m_BufferSize)
+//		ret = ft_strndup(line_buffer->m_Start, line_buffer->m_BufferSize); //This bottlenecks for big BUFFERSIZE with many many small lines
+//	else
+//		ret = malloc(BUFFER_SIZE);
+//	if (!ret) {
+//		return (NULL);
+//	}
+//	bytes_read_total = line_buffer->m_BufferSize;
+//	bytes_read = 1;
+//	while (1) {
+//		line_end = ft_memchr(ret, '\n', bytes_read_total);
+//		if (line_end || !bytes_read)
+//			return (ProcessLine(ret, line_end, line_buffer, bytes_read_total));
+//		line_buffer->m_Start = &(line_buffer->m_Buffer[0]);
+//		bytes_read = read(fd, line_buffer->m_Start, BUFFER_SIZE);
+//		if (bytes_read < 0)
+//			return (CleanUp(ret, line_buffer));
+//		line_buffer->m_BufferSize = bytes_read;
+//		realloc_temp = ft_realloc(ret, bytes_read_total, bytes_read_total + bytes_read);
+//		if (!realloc_temp)
+//			return (CleanUp(ret, line_buffer));
+//		ret = realloc_temp;
+//		ft_memcpy(ret + bytes_read_total, line_buffer->m_Start, bytes_read);
+//		bytes_read_total += bytes_read;
+//	}
+//}
+//static char *ProcessLine(char *line, char *line_end, t_line_buffer *line_buffer, size_t size) {
+//	char *ret;
+//	size_t line_len;
+//
+//	if (!size)
+//		return (CleanUp(line, line_buffer));
+//	if (line_end)
+//		line_len = line_end - line + 1;
+//	else
+//		line_len = size;
+//	ret = ft_strndup(line, line_len);
+//	if (!ret)
+//		return (CleanUp(line, line_buffer));
+//	line_len = (char*) ft_memchr(line_buffer->m_Start, '\n', line_buffer->m_BufferSize) - line_buffer->m_Start + 1;
+//	line_buffer->m_Start += line_len;
+//	if (line_buffer->m_BufferSize > line_len) {
+//		line_buffer->m_BufferSize -= (line_len);
+////		printf("buffer \"%.*s\"\n", (int) line_buffer->m_BufferSize, line_buffer->m_Start);
+//	} else
+//		line_buffer->m_BufferSize = 0;
+//	free(line);
+//	return (ret);
+//}

@@ -95,8 +95,10 @@ void
 	ret = malloc(new_len);
 	if (!ret)
 		return (NULL);
-	ft_memcpy(ret, src, old_len);
-	free(src);
+	if (!src) {
+		ft_memcpy(ret, src, old_len);
+		free(src);
+	}
 	return (ret);
 }
 
