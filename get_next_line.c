@@ -81,7 +81,7 @@ char *get_next_line(int fd) {
 		return (NULL);
 	line_buffer = GetLineBuffer(fd);
 	if (line_buffer->m_BufferSize)
-		ret = ft_strndup(line_buffer->m_Start, line_buffer->m_BufferSize);
+		ret = ft_strndup(line_buffer->m_Start, line_buffer->m_BufferSize); //This bottlenecks for big BUFFERSIZE with many many small lines
 	else
 		ret = malloc(BUFFER_SIZE);
 	if (!ret) {
