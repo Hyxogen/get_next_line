@@ -32,6 +32,7 @@ typedef struct s_line_buffer {
 	char *m_Start;
 	char *m_End;
 	size_t m_BufferSize;
+	ssize_t m_LastRead;
 }	t_line_buffer;
 
 # define TRUE 1
