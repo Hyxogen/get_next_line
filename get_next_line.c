@@ -38,7 +38,10 @@ static int IsValidFD(int fd) {
 }
 
 static size_t GetRemainingSize(const t_line_buffer *line_buffer) {
-	return (line_buffer->m_End - line_buffer->m_Start + 1);
+	if (line_buffer->m_End < (line_buffer->m_Start + line_buffer->m_LastRead))
+		return (line_buffer->m_End - line_buffer->m_Start + 1);
+	else
+		return (line_buffer->m_LastRead);
 }
 
 static int CopyOver(char **dst, size_t *dst_size, t_line_buffer *line_buffer) {
@@ -100,7 +103,11 @@ static char *ProcessLine(char *tmp, size_t tmp_size, t_line_buffer *line_buffer,
 			return (NULL);
 		}
 		ft_memcpy(ret + tmp_size, line_buffer->m_Start, line_len);
-		ret[tmp_size + line_len - (line_buffer->m_LastRead < BUFFER_SIZE)] = '\0';
+		tmp = ft_memchr(line_buffer->m_Start, '\n', line_buffer->m_LastRead);
+		if (tmp)
+			ret[tmp_size + line_len] = '\0';
+		else
+			ret[tmp_size + line_len - 1] = '\0';
 		line_buffer->m_Start = line_end + 1;
 		if (line_buffer->m_Start >= (&line_buffer->m_Buffer[0] + line_buffer->m_LastRead)) {
 			line_buffer->m_Start = &line_buffer->m_Buffer[0];
