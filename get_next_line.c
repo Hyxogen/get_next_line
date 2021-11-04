@@ -50,6 +50,7 @@ static int CopyOver(char **dst, size_t *dst_size, t_line_buffer *line_buffer) {
 //	ret = ft_realloc(*dst, *dst_size, *dst_size + line_buffer->m_LastRead);
 	if (!ret) {
 		free(*dst);
+		line_buffer->m_LastRead = -1;
 		return (FALSE);
 	}
 	ft_memcpy(ret + *dst_size, line_buffer->m_Start, GetRemainingSize(line_buffer));
@@ -66,9 +67,10 @@ static char *ProcessLine(char *tmp, size_t tmp_size, t_line_buffer *line_buffer,
 
 	ret = NULL;
 	line_len = line_end - line_buffer->m_Start + 1;
-	if (!tmp && line_buffer->m_LastRead <= 0)
+	if (!tmp && line_buffer->m_LastRead <= 0) {
+		line_buffer->m_LastRead = -1;
 		return (NULL);
-	else if (!tmp) {
+	} else if (!tmp) {
 		ret = ft_strndup(line_buffer->m_Start, line_len);
 		if (!ret) {
 			free(tmp);
