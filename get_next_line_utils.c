@@ -40,8 +40,8 @@ void
 void
 	*ft_memcpy(void *dst, const void *src, size_t len)
 {
-	unsigned char			*dst_cpy;
-	const unsigned char		*src_cpy;
+	unsigned char		*dst_cpy;
+	const unsigned char	*src_cpy;
 
 	if (dst == src)
 		return (dst);
@@ -56,10 +56,11 @@ void
 }
 
 char
-	*ft_strndup(const char *str, size_t len) {
-	char *ret;
-	const char *temp;
-	size_t str_len;
+	*ft_strndup(const char *str, size_t len)
+{
+	char		*ret;
+	const char	*temp;
+	size_t		str_len;
 
 	temp = str;
 	str_len = len;
@@ -69,7 +70,6 @@ char
 		str_len--;
 	}
 	str_len = temp - str;
-//	str_len = strnlen(str, len);
 	if (len <= str_len)
 		len = len + 1;
 	else
@@ -86,6 +86,9 @@ char
  * Can probably speed up this function by
  * copying 8 bytes ints first etc like my
  * memset from libft
+ *
+ * Also different from the real realloc, this one frees src if the new malloc
+ * went wrong
  */
 void
 	*ft_realloc(void *src, size_t old_len, size_t new_len)
@@ -94,9 +97,15 @@ void
 
 	ret = malloc(new_len);
 	if (!ret)
+	{
+		free(src);
 		return (NULL);
-	ft_memcpy(ret, src, old_len);
-	free(src);
+	}
+	if (src)
+	{
+		ft_memcpy(ret, src, old_len);
+		free(src);
+	}
 	return (ret);
 }
 
@@ -108,11 +117,11 @@ void
 {
 	unsigned char	*src_cpy;
 
-    src_cpy = src;
-    while (len)
-    {
-        src_cpy[len - 1] = (unsigned char) c;
-        len--;
-    }
-    return (src);
+	src_cpy = src;
+	while (len)
+	{
+		src_cpy[len - 1] = (unsigned char) c;
+		len--;
+	}
+	return (src);
 }
