@@ -86,6 +86,9 @@ char
  * Can probably speed up this function by
  * copying 8 bytes ints first etc like my
  * memset from libft
+ *
+ * Also different from the real realloc, this one frees src if the new malloc
+ * went wrong
  */
 void
 	*ft_realloc(void *src, size_t old_len, size_t new_len)
@@ -94,7 +97,10 @@ void
 
 	ret = malloc(new_len);
 	if (!ret)
+	{
+		free(src);
 		return (NULL);
+	}
 	if (src)
 	{
 		ft_memcpy(ret, src, old_len);
