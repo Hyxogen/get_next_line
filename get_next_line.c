@@ -98,34 +98,31 @@ static char
 	return (NULL);
 }
 
-char *get_next_line(int fd)
+char
+	*get_next_line(int fd)
 {
-	t_line_buffer *line_buffer;
-	char          *tmp;
-	char          *new_line;
-	size_t        tmp_size;
+	t_line_buffer	*lb;
+	char			*tmp;
+	char			*new_line;
+	size_t			size;
 
 	if (!((fd >= 0) && (fd <= OPEN_MAX)))
 		return (NULL);
-	line_buffer = GetLineBuffer(fd);
-	tmp         = NULL;
-	tmp_size    = 0;
+	lb = GetLineBuffer(fd);
+	tmp = NULL;
+	size = 0;
 	while (1)
 	{
-		new_line = ft_memchr(line_buffer->m_Start, '\n',
-							 GetRemainingSize(line_buffer));
+		new_line = ft_memchr(lb->m_Start, '\n', GetRemainingSize(lb));
 		if (new_line)
-			return (ProcessLine(tmp, tmp_size, line_buffer, new_line));
-		if ((line_buffer->m_LastRead >= 0) &&
-			(line_buffer->m_LastRead < BUFFER_SIZE))
-			return (ProcessLine(tmp, tmp_size, line_buffer,
-								line_buffer->m_Start +
-								line_buffer->m_LastRead));
-		if (!CopyOver(&tmp, &tmp_size, line_buffer))
+			return (ProcessLine(tmp, size, lb, new_line));
+		if ((lb->m_LastRead >= 0) && (lb->m_LastRead < BUFFER_SIZE))
+			return (ProcessLine(tmp, size, lb, lb->m_Start + lb->m_LastRead));
+		if (!CopyOver(&tmp, &size, lb))
 			return (NULL);
-		line_buffer->m_LastRead = read(fd, line_buffer->m_Start, BUFFER_SIZE);
-		if (line_buffer->m_LastRead < 0)
-			break;
+		lb->m_LastRead = read(fd, lb->m_Start, BUFFER_SIZE);
+		if (lb->m_LastRead < 0)
+			break ;
 	}
 	free(tmp);
 	return (NULL);
