@@ -20,127 +20,114 @@
  * @param fd a valid file descriptor
  * @return the t_line_buffer corresponding to the file descriptor
  */
-static t_line_buffer *GetLineBuffer(int fd) {
+static t_line_buffer *GetLineBuffer(int fd)
+{
 	static t_line_buffer line_buffers[OPEN_MAX];
-	t_line_buffer *ret;
+	t_line_buffer        *ret;
 
 	ret = &line_buffers[fd];
 	ret->m_End = &(ret->m_Buffer[BUFFER_SIZE - 1]);
-	if (!ret->m_Start) {
+	if (!ret->m_Start)
+	{
 		ret->m_LastRead = -1;
-		ret->m_Start = &ret->m_Buffer[0];
+		ret->m_Start    = &ret->m_Buffer[0];
 	}
 	return (&line_buffers[fd]);
 }
 
-static int IsValidFD(int fd) {
-	return ((fd >= 0) && (fd <= OPEN_MAX));
-}
-
-static size_t GetRemainingSize(const t_line_buffer *line_buffer) {
+static size_t GetRemainingSize(const t_line_buffer *line_buffer)
+{
 	if (line_buffer->m_End < (line_buffer->m_Start + line_buffer->m_LastRead))
 		return (line_buffer->m_End - line_buffer->m_Start + 1);
-	else
-		return (line_buffer->m_LastRead);
+	return (line_buffer->m_LastRead);
 }
 
-static int CopyOver(char **dst, size_t *dst_size, t_line_buffer *line_buffer) {
+static int CopyOver(char **dst, size_t *dst_size, t_line_buffer *line_buffer)
+{
 	char *ret;
 
 	if (line_buffer->m_LastRead <= 0)
 		return (TRUE);
-	ret = ft_realloc(*dst, *dst_size, *dst_size + GetRemainingSize(line_buffer));
-//	ret = ft_realloc(*dst, *dst_size, *dst_size + line_buffer->m_LastRead);
-	if (!ret) {
+	ret = ft_realloc(*dst, *dst_size,
+					 *dst_size + GetRemainingSize(line_buffer));
+	if (!ret)
+	{
 		free(*dst);
 		line_buffer->m_LastRead = -1;
 		return (FALSE);
 	}
-	ft_memcpy(ret + *dst_size, line_buffer->m_Start, GetRemainingSize(line_buffer));
-//	ft_memcpy(ret + *dst_size, line_buffer->m_Start, line_buffer->m_LastRead);
+	ft_memcpy(ret + *dst_size, line_buffer->m_Start,
+			  GetRemainingSize(line_buffer));
 	*dst_size += GetRemainingSize(line_buffer);
 	line_buffer->m_Start = &line_buffer->m_Buffer[0];
 	*dst = ret;
 	return (TRUE);
 }
 
-static char *ProcessLine(char *tmp, size_t tmp_size, t_line_buffer *line_buffer, char *line_end) {
-	char *ret;
+static char *ProcessLine(char *tmp, size_t tmp_size, t_line_buffer *line_buffer,
+		char *line_end)
+{
+	char   *ret;
 	size_t line_len;
 
-	ret = NULL;
+	ret      = NULL;
 	line_len = line_end - line_buffer->m_Start + 1;
-	if (!tmp && line_buffer->m_LastRead <= 0) {
-		line_buffer->m_LastRead = -1;
-		return (NULL);
-	} else if (!tmp) {
-		ret = ft_strndup(line_buffer->m_Start, line_len);
-		if (!ret) {
-			free(tmp);
-			return (NULL);
-		}
-		line_buffer->m_Start = line_end + 1;
-		if (line_buffer->m_Start >= (&line_buffer->m_Buffer[0] + line_buffer->m_LastRead)) {
-			line_buffer->m_Start = &line_buffer->m_Buffer[0];
-			ft_memset(line_buffer->m_Start, '\0', BUFFER_SIZE);
-			line_buffer->m_LastRead = -1;
-		}
-		return (ret);
-	} else {
-		if (!line_buffer->m_LastRead) {
-			ret = ft_realloc(tmp, tmp_size, tmp_size + 1);
-			//TODO clear data
-			if (!ret) {
-				free(tmp);
-				return (NULL);
-			}
-			ret[tmp_size] = '\0';
-			return (ret);
-		}
+	if (tmp || (line_buffer->m_LastRead > 0))
+	{
 		ret = ft_realloc(tmp, tmp_size, tmp_size + line_len + 1);
-		if (!ret) {
+		if (!ret)
+		{
 			free(tmp);
 			return (NULL);
 		}
 		ft_memcpy(ret + tmp_size, line_buffer->m_Start, line_len);
-		tmp = ft_memchr(line_buffer->m_Start, '\n', line_buffer->m_LastRead);
-		if (tmp)
+		if (ft_memchr(line_buffer->m_Start, '\n', line_buffer->m_LastRead))
 			ret[tmp_size + line_len] = '\0';
 		else
 			ret[tmp_size + line_len - 1] = '\0';
 		line_buffer->m_Start = line_end + 1;
-		if (line_buffer->m_Start >= (&line_buffer->m_Buffer[0] + line_buffer->m_LastRead)) {
+		if (line_buffer->m_Start >=
+			(&line_buffer->m_Buffer[0] + line_buffer->m_LastRead))
+		{
 			line_buffer->m_Start = &line_buffer->m_Buffer[0];
 			ft_memset(line_buffer->m_Start, '\0', BUFFER_SIZE);
 			line_buffer->m_LastRead = -1;
 		}
 		return (ret);
 	}
+	line_buffer->m_LastRead = -1;
+	return (NULL);
 }
 
-char *get_next_line(int fd) {
+char *get_next_line(int fd)
+{
 	t_line_buffer *line_buffer;
-	char *tmp;
-	char *new_line;
-	size_t tmp_size;
+	char          *tmp;
+	char          *new_line;
+	size_t        tmp_size;
 
-	if (!IsValidFD(fd))
+	if (!((fd >= 0) && (fd <= OPEN_MAX)))
 		return (NULL);
 	line_buffer = GetLineBuffer(fd);
-	tmp = NULL;
-	tmp_size = 0;
-	while (1) {
-		new_line = ft_memchr(line_buffer->m_Start, '\n', GetRemainingSize(line_buffer));
+	tmp         = NULL;
+	tmp_size    = 0;
+	while (1)
+	{
+		new_line = ft_memchr(line_buffer->m_Start, '\n',
+							 GetRemainingSize(line_buffer));
 		if (new_line)
 			return (ProcessLine(tmp, tmp_size, line_buffer, new_line));
-		if ((line_buffer->m_LastRead >=0) && (line_buffer->m_LastRead < BUFFER_SIZE))
-			return (ProcessLine(tmp, tmp_size, line_buffer, line_buffer->m_Start + line_buffer->m_LastRead));
+		if ((line_buffer->m_LastRead >= 0) &&
+			(line_buffer->m_LastRead < BUFFER_SIZE))
+			return (ProcessLine(tmp, tmp_size, line_buffer,
+								line_buffer->m_Start +
+								line_buffer->m_LastRead));
 		if (!CopyOver(&tmp, &tmp_size, line_buffer))
 			return (NULL);
 		line_buffer->m_LastRead = read(fd, line_buffer->m_Start, BUFFER_SIZE);
-		if (line_buffer->m_LastRead < 0) {
-			free(tmp);
-			return (NULL);
-		}
+		if (line_buffer->m_LastRead < 0)
+			break;
 	}
+	free(tmp);
+	return (NULL);
 }
