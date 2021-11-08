@@ -40,8 +40,8 @@ void
 void
 	*ft_memcpy(void *dst, const void *src, size_t len)
 {
-	unsigned char			*dst_cpy;
-	const unsigned char		*src_cpy;
+	unsigned char		*dst_cpy;
+	const unsigned char	*src_cpy;
 
 	if (dst == src)
 		return (dst);
@@ -56,10 +56,11 @@ void
 }
 
 char
-	*ft_strndup(const char *str, size_t len) {
-	char *ret;
-	const char *temp;
-	size_t str_len;
+	*ft_strndup(const char *str, size_t len)
+{
+	char		*ret;
+	const char	*temp;
+	size_t		str_len;
 
 	temp = str;
 	str_len = len;
@@ -69,7 +70,6 @@ char
 		str_len--;
 	}
 	str_len = temp - str;
-//	str_len = strnlen(str, len);
 	if (len <= str_len)
 		len = len + 1;
 	else
@@ -95,7 +95,8 @@ void
 	ret = malloc(new_len);
 	if (!ret)
 		return (NULL);
-	if (src) {
+	if (src)
+	{
 		ft_memcpy(ret, src, old_len);
 		free(src);
 	}
@@ -110,11 +111,11 @@ void
 {
 	unsigned char	*src_cpy;
 
-    src_cpy = src;
-    while (len)
-    {
-        src_cpy[len - 1] = (unsigned char) c;
-        len--;
-    }
-    return (src);
+	src_cpy = src;
+	while (len)
+	{
+		src_cpy[len - 1] = (unsigned char) c;
+		len--;
+	}
+	return (src);
 }
