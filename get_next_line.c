@@ -60,43 +60,39 @@ static int
 		return (FALSE);
 	}
 	ft_memcpy(ret + *dst_size, line_buffer->m_Start,
-			  GetRemainingSize(line_buffer));
+		  GetRemainingSize(line_buffer));
 	*dst_size += GetRemainingSize(line_buffer);
 	line_buffer->m_Start = &line_buffer->m_Buffer[0];
 	*dst = ret;
 	return (TRUE);
 }
 
-static char *ProcessLine(char *tmp, size_t tmp_size, t_line_buffer *line_buffer,
+static char
+	*ProcessLine(char *tmp, size_t tmp_size, t_line_buffer *line_buffer,
 		char *line_end)
 {
-	char   *ret;
-	size_t line_len;
+	size_t	line_len;
 
-	ret      = NULL;
 	line_len = line_end - line_buffer->m_Start + 1;
 	if (tmp || (line_buffer->m_LastRead > 0))
 	{
-		ret = ft_realloc(tmp, tmp_size, tmp_size + line_len + 1);
-		if (!ret)
-		{
-			free(tmp);
+		tmp = ft_realloc(tmp, tmp_size, tmp_size + line_len + 1);
+		if (!tmp)
 			return (NULL);
-		}
-		ft_memcpy(ret + tmp_size, line_buffer->m_Start, line_len);
+		ft_memcpy(tmp + tmp_size, line_buffer->m_Start, line_len);
 		if (ft_memchr(line_buffer->m_Start, '\n', line_buffer->m_LastRead))
-			ret[tmp_size + line_len] = '\0';
+			tmp[tmp_size + line_len] = '\0';
 		else
-			ret[tmp_size + line_len - 1] = '\0';
+			tmp[tmp_size + line_len - 1] = '\0';
 		line_buffer->m_Start = line_end + 1;
-		if (line_buffer->m_Start >=
-			(&line_buffer->m_Buffer[0] + line_buffer->m_LastRead))
+		if (line_buffer->m_Start
+			>= (&line_buffer->m_Buffer[0] + line_buffer->m_LastRead))
 		{
 			line_buffer->m_Start = &line_buffer->m_Buffer[0];
 			ft_memset(line_buffer->m_Start, '\0', BUFFER_SIZE);
 			line_buffer->m_LastRead = -1;
 		}
-		return (ret);
+		return (tmp);
 	}
 	line_buffer->m_LastRead = -1;
 	return (NULL);
