@@ -20,36 +20,39 @@
  * @param fd a valid file descriptor
  * @return the t_line_buffer corresponding to the file descriptor
  */
-static t_line_buffer *GetLineBuffer(int fd)
+static t_line_buffer
+	*GetLineBuffer(int fd)
 {
-	static t_line_buffer line_buffers[OPEN_MAX];
-	t_line_buffer        *ret;
+	static t_line_buffer	line_buffers[OPEN_MAX];
+	t_line_buffer			*ret;
 
 	ret = &line_buffers[fd];
 	ret->m_End = &(ret->m_Buffer[BUFFER_SIZE - 1]);
 	if (!ret->m_Start)
 	{
 		ret->m_LastRead = -1;
-		ret->m_Start    = &ret->m_Buffer[0];
+		ret->m_Start = &ret->m_Buffer[0];
 	}
 	return (&line_buffers[fd]);
 }
 
-static size_t GetRemainingSize(const t_line_buffer *line_buffer)
+static size_t
+	GetRemainingSize(const t_line_buffer *line_buffer)
 {
 	if (line_buffer->m_End < (line_buffer->m_Start + line_buffer->m_LastRead))
 		return (line_buffer->m_End - line_buffer->m_Start + 1);
 	return (line_buffer->m_LastRead);
 }
 
-static int CopyOver(char **dst, size_t *dst_size, t_line_buffer *line_buffer)
+static int
+	CopyOver(char **dst, size_t *dst_size, t_line_buffer *line_buffer)
 {
-	char *ret;
+	char	*ret;
 
 	if (line_buffer->m_LastRead <= 0)
 		return (TRUE);
 	ret = ft_realloc(*dst, *dst_size,
-					 *dst_size + GetRemainingSize(line_buffer));
+			  *dst_size + GetRemainingSize(line_buffer));
 	if (!ret)
 	{
 		free(*dst);
