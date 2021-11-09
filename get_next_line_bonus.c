@@ -17,7 +17,7 @@
 #include "gnlTester/src/Logger.h"
 
 static t_line_buffer
-*get_linebuffer(int fd)
+	*get_linebuffer(int fd)
 {
 	static t_line_buffer	line_buffers[OPEN_MAX];
 	t_line_buffer			*ret;
@@ -33,21 +33,21 @@ static t_line_buffer
 }
 
 static int
-copy_over(char **dst, size_t *dst_size, t_line_buffer *line_buffer)
+	copy_over(char **dst, size_t *dst_size, t_line_buffer *line_buffer)
 {
 	char	*ret;
 
 	if (line_buffer->m_LastRead <= 0)
 		return (TRUE);
 	ret = ft_realloc(*dst, *dst_size,
-					 *dst_size + get_remaining_size(line_buffer));
+			  *dst_size + get_remaining_size(line_buffer));
 	if (!ret)
 	{
 		line_buffer->m_LastRead = -1;
 		return (FALSE);
 	}
 	ft_memcpy(ret + *dst_size, line_buffer->m_Start,
-			  get_remaining_size(line_buffer));
+		  get_remaining_size(line_buffer));
 	*dst_size += get_remaining_size(line_buffer);
 	line_buffer->m_Start = &line_buffer->m_Buffer[0];
 	*dst = ret;
@@ -55,7 +55,7 @@ copy_over(char **dst, size_t *dst_size, t_line_buffer *line_buffer)
 }
 
 static char
-*process_line(char *tmp, size_t tmp_size, t_line_buffer *lb,
+	*process_line(char *tmp, size_t tmp_size, t_line_buffer *lb,
 		char *line_end)
 {
 	size_t	line_len;
@@ -86,7 +86,7 @@ static char
 }
 
 static void
-read_to(int fd, t_line_buffer *line_buffer, ssize_t buffer_size) {
+	read_to(int fd, t_line_buffer *line_buffer, ssize_t buffer_size) {
 	line_buffer->m_LastRead = read(fd, &line_buffer->m_Buffer[0], buffer_size);
 	line_buffer->m_Buffer[line_buffer->m_LastRead] = '\0';
 }
@@ -101,7 +101,7 @@ read_to(int fd, t_line_buffer *line_buffer, ssize_t buffer_size) {
  * @returns On failure returns NULL pointer
  */
 char
-*get_next_line(int fd)
+	*get_next_line(int fd)
 {
 	t_line_buffer	*lb;
 	char			*tmp;
