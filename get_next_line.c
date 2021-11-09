@@ -15,11 +15,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-/**
- *
- * @param fd a valid file descriptor
- * @return the t_line_buffer corresponding to the file descriptor
- */
 static t_line_buffer
 	*get_linebuffer(int fd)
 {
@@ -97,6 +92,15 @@ static char
 	return (NULL);
 }
 
+/**
+ * Gets the next line in from a file
+ *
+ * @param fd a file descriptor from which to get the next line
+ * @returns On success returns the next line in the file allocated on the heap
+ * or NULL if file end has been reached
+ *
+ * @returns On failure returns NULL pointer
+ */
 char
 	*get_next_line(int fd)
 {
