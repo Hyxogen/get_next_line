@@ -14,7 +14,6 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include "gnlTester/src/Logger.h"
 
 static t_line_buffer
 	*get_linebuffer(int fd)
