@@ -14,6 +14,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include "gnlTester/src/Logger.h"
 
 static t_line_buffer
 	*get_linebuffer(int fd)
@@ -29,14 +30,6 @@ static t_line_buffer
 		ret->m_Start = &ret->m_Buffer[0];
 	}
 	return (&line_buffers[fd]);
-}
-
-static size_t
-	get_remaining_size(const t_line_buffer *line_buffer)
-{
-	if (line_buffer->m_End < (line_buffer->m_Start + line_buffer->m_LastRead))
-		return (line_buffer->m_End - line_buffer->m_Start + 1);
-	return (line_buffer->m_LastRead);
 }
 
 static int
@@ -62,34 +55,40 @@ static int
 }
 
 static char
-	*process_line(char *tmp, size_t tmp_size, t_line_buffer *line_buffer,
+	*process_line(char *tmp, size_t tmp_size, t_line_buffer *lb,
 		char *line_end)
 {
 	size_t	line_len;
 
-	line_len = line_end - line_buffer->m_Start + 1;
-	if (tmp || (line_buffer->m_LastRead > 0))
+	line_len = line_end - lb->m_Start + 1;
+	if (tmp || (lb->m_LastRead > 0))
 	{
 		tmp = ft_realloc(tmp, tmp_size, tmp_size + line_len + 1);
 		if (!tmp)
 			return (NULL);
-		ft_memcpy(tmp + tmp_size, line_buffer->m_Start, line_len);
-		if (ft_memchr(line_buffer->m_Start, '\n', line_buffer->m_LastRead))
+		ft_memcpy(tmp + tmp_size, lb->m_Start, line_len);
+		if (ft_memchr(lb->m_Start, '\n', get_remaining_size(lb)))
 			tmp[tmp_size + line_len] = '\0';
 		else
 			tmp[tmp_size + line_len - 1] = '\0';
-		line_buffer->m_Start = line_end + 1;
-		if (line_buffer->m_Start
-			>= (&line_buffer->m_Buffer[0] + line_buffer->m_LastRead))
+		lb->m_Start = line_end + 1;
+		if (lb->m_Start
+			>= (&lb->m_Buffer[0] + lb->m_LastRead))
 		{
-			line_buffer->m_Start = &line_buffer->m_Buffer[0];
-			ft_memset(line_buffer->m_Start, '\0', BUFFER_SIZE);
-			line_buffer->m_LastRead = -1;
+			lb->m_Start = &lb->m_Buffer[0];
+			ft_memset(lb->m_Start, '\0', BUFFER_SIZE);
+			lb->m_LastRead = -1;
 		}
 		return (tmp);
 	}
-	line_buffer->m_LastRead = -1;
+	lb->m_LastRead = -1;
 	return (NULL);
+}
+
+static void
+	read_to(int fd, t_line_buffer *line_buffer, ssize_t buffer_size) {
+	line_buffer->m_LastRead = read(fd, &line_buffer->m_Buffer[0], buffer_size);
+	line_buffer->m_Buffer[line_buffer->m_LastRead] = '\0';
 }
 
 /**
@@ -123,7 +122,7 @@ char
 			return (process_line(tmp, size, lb, lb->m_Start + lb->m_LastRead));
 		if (!copy_over(&tmp, &size, lb))
 			return (NULL);
-		lb->m_LastRead = read(fd, lb->m_Start, BUFFER_SIZE);
+		read_to(fd, lb, BUFFER_SIZE);
 		if (lb->m_LastRead < 0)
 			break ;
 	}
