@@ -15,6 +15,19 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * Custom implementation of libc memchr from libft
+ *
+ * @brief Finds the first occurrence of c (after conversion to unsigned char as
+ * if by (unsigned char)c) in the initial count characters (each interpreted as
+ * unsigned char) of the object pointed to by ptr.
+ *
+ * @param arr pointer to the object to be examined
+ * @param c	character to search for
+ * @param n	max number of characters to examine
+ * @return The ft_memchr() function returns a pointer to the byte located, or
+ * NULL if no such byte exists within n bytes.
+ */
 void
 	*ft_memchr(const void *arr, unsigned char c, size_t n)
 {
@@ -34,8 +47,16 @@ void
 }
 
 /**
- * Todo try to optimize this function like
- * my libft memset
+ * Custom implementation of libc memcpy from libft
+ *
+ * @brief Copies count characters from the object pointed to by src to the
+ * object pointed to by dest. Both objects are interpreted as arrays of unsigned
+ * char.
+ *
+ * @param dst pointer to the object to copy to
+ * @param src pointer to the object to copy from
+ * @param len number of bytes to copy
+ * @returns Returns a copy of dest
  */
 void
 	*ft_memcpy(void *dst, const void *src, size_t len)
@@ -55,40 +76,27 @@ void
 	return (dst);
 }
 
-char
-	*ft_strndup(const char *str, size_t len)
-{
-	char		*ret;
-	const char	*temp;
-	size_t		str_len;
-
-	temp = str;
-	str_len = len;
-	while (str_len && *temp)
-	{
-		temp++;
-		str_len--;
-	}
-	str_len = temp - str;
-	if (len <= str_len)
-		len = len + 1;
-	else
-		len = str_len + 1;
-	ret = malloc(len);
-	if (!ret)
-		return (NULL);
-	ft_memcpy(ret, str, len - 1);
-	ret[len - 1] = '\0';
-	return (ret);
-}
-
 /**
- * Can probably speed up this function by
- * copying 8 bytes ints first etc like my
- * memset from libft
+ * Custom implementation of libc realloc
  *
- * Also different from the real realloc, this one frees src if the new malloc
- * went wrong
+ * @brief Reallocates the given area of memory. It must be previously allocated
+ * by malloc(), calloc() or realloc() and not yet freed with a call to free or
+ * realloc. Otherwise, the results are undefined.
+ *
+ * @remark If allocation of new memory failed, the old memory block is freed and
+ * null pointer is returned.
+ * @remark If src is NULL, the behavior is the same as calling malloc(new_len).
+ *
+ * @param src pointer to the memory area to be reallocated
+ * @param old_len old size of the array in bytes
+ * @param new_len new size of the array in bytes
+ * @return On success, returns the pointer to the beginning of newly allocated
+ * memory. To avoid a memory leak, the returned pointer must be deallocated with
+ * free() or realloc(). The original pointer ptr is invalidated and any access
+ * to it is undefined behavior (even if reallocation was in-place).
+ *
+ * @return On failure, returns a null pointer. The original pointer ptr is also
+ * freed
  */
 void
 	*ft_realloc(void *src, size_t old_len, size_t new_len)
@@ -109,8 +117,17 @@ void
 	return (ret);
 }
 
-/*
- * TODO check if this memset works
+/**
+ * Custom implementation of libc memset from libft
+ *
+ * @brief Copies the value c (after conversion to unsigned char as if by
+ * (unsigned char)c) into each of the first count characters of the object
+ * pointed to by dest.
+ *
+ * @param src pointer to the object to fill
+ * @param c fill byte
+ * @param len number of bytes to fill
+ * @return A copy of dest
  */
 void
 	*ft_memset(void *src, int c, size_t len)
