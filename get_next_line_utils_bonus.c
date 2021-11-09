@@ -15,6 +15,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+size_t
+	get_remaining_size(const t_line_buffer *line_buffer)
+{
+	if (line_buffer->m_End < (line_buffer->m_Start + line_buffer->m_LastRead))
+		return (line_buffer->m_End - line_buffer->m_Start + 1);
+	return (line_buffer->m_LastRead);
+}
+
 /**
  * Custom implementation of libc memchr from libft
  *
