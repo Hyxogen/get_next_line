@@ -21,7 +21,7 @@
  * @return the t_line_buffer corresponding to the file descriptor
  */
 static t_line_buffer
-	*GetLineBuffer(int fd)
+	*get_linebuffer(int fd)
 {
 	static t_line_buffer	line_buffers[OPEN_MAX];
 	t_line_buffer			*ret;
@@ -37,7 +37,7 @@ static t_line_buffer
 }
 
 static size_t
-	GetRemainingSize(const t_line_buffer *line_buffer)
+	get_remaining_size(const t_line_buffer *line_buffer)
 {
 	if (line_buffer->m_End < (line_buffer->m_Start + line_buffer->m_LastRead))
 		return (line_buffer->m_End - line_buffer->m_Start + 1);
@@ -45,30 +45,29 @@ static size_t
 }
 
 static int
-	CopyOver(char **dst, size_t *dst_size, t_line_buffer *line_buffer)
+	copy_over(char **dst, size_t *dst_size, t_line_buffer *line_buffer)
 {
 	char	*ret;
 
 	if (line_buffer->m_LastRead <= 0)
 		return (TRUE);
 	ret = ft_realloc(*dst, *dst_size,
-			  *dst_size + GetRemainingSize(line_buffer));
+			  *dst_size + get_remaining_size(line_buffer));
 	if (!ret)
 	{
-		free(*dst);
 		line_buffer->m_LastRead = -1;
 		return (FALSE);
 	}
 	ft_memcpy(ret + *dst_size, line_buffer->m_Start,
-		  GetRemainingSize(line_buffer));
-	*dst_size += GetRemainingSize(line_buffer);
+		  get_remaining_size(line_buffer));
+	*dst_size += get_remaining_size(line_buffer);
 	line_buffer->m_Start = &line_buffer->m_Buffer[0];
 	*dst = ret;
 	return (TRUE);
 }
 
 static char
-	*ProcessLine(char *tmp, size_t tmp_size, t_line_buffer *line_buffer,
+	*process_line(char *tmp, size_t tmp_size, t_line_buffer *line_buffer,
 		char *line_end)
 {
 	size_t	line_len;
@@ -108,17 +107,17 @@ char
 
 	if (!((fd >= 0) && (fd <= OPEN_MAX)))
 		return (NULL);
-	lb = GetLineBuffer(fd);
+	lb = get_linebuffer(fd);
 	tmp = NULL;
 	size = 0;
 	while (1)
 	{
-		new_line = ft_memchr(lb->m_Start, '\n', GetRemainingSize(lb));
+		new_line = ft_memchr(lb->m_Start, '\n', get_remaining_size(lb));
 		if (new_line)
-			return (ProcessLine(tmp, size, lb, new_line));
+			return (process_line(tmp, size, lb, new_line));
 		if ((lb->m_LastRead >= 0) && (lb->m_LastRead < BUFFER_SIZE))
-			return (ProcessLine(tmp, size, lb, lb->m_Start + lb->m_LastRead));
-		if (!CopyOver(&tmp, &size, lb))
+			return (process_line(tmp, size, lb, lb->m_Start + lb->m_LastRead));
+		if (!copy_over(&tmp, &size, lb))
 			return (NULL);
 		lb->m_LastRead = read(fd, lb->m_Start, BUFFER_SIZE);
 		if (lb->m_LastRead < 0)
