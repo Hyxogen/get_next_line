@@ -15,6 +15,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * Function for getting the remaining byte count in m_Buffer of t_line_buffer
+ * able to written to and read from starting at m_Start
+ *
+ * @param line_buffer pointer to a linebuffer to get the buffersize left in it
+ * @return how many bytes are still left in the m_Buffer counting from m_Start
+ * of t_line_buffer
+ */
 size_t
 	get_remaining_size(const t_line_buffer *line_buffer)
 {
